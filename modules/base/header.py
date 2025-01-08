@@ -167,9 +167,13 @@ class BaseModbusResponseHeaderUnion(Union):
     
 class ModbusResponseHeader(BaseModbusResponseHeaderUnion):
     def __init__(self, slave_id : int, function_code : BaseLabelEnum, byte_count__exception_code : int):
+        self._fc = function_code
         self.fields._slave_address = slave_id
         self.fields._function_code = function_code.value
         self.fields._byteCount = byte_count__exception_code
+        
+    def getFunctionCode(self) -> BaseLabelEnum:
+        return ModbusFunctionCode(self._fc)
         
     def getExceptionCode(self) -> ModbusExceptionCodes:
         return ModbusExceptionCodes(self.fields._exceptionCode)

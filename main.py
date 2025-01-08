@@ -1,9 +1,8 @@
-import math
 from serial import Serial
 
-from ctypes import *
+from modules.requests import ModbusReadCoils, ModbusReadInputRegisters, ModbusReadHoldingRegisters
+from modules.requests import ModbusWriteSingleCoil, ModbusWriteSingleRegister, ModbusWriteHoldingRegisters
 
-from modules.requests import ModbusReadCoils, ModbusReadDiscreteInputs, ModbusWriteSingleCoil, ModbusWriteHoldingRegisters
 from modules.responses import ModbusReadCoilsResponse
         
 
@@ -21,7 +20,7 @@ dummy_data_2 : bytes = bytes(
 )
 
 dummy_data_3 = bytes(
-    [ 0x0B, 0x02, 0x03, 0xAC, 0xDB, 0xFB, 0x0D, 0x37, 0xBC ]
+    [ 0x0B, 0x01, 0x03, 0xAC, 0xDB, 0xFB, 0x0D, 0x37, 0xBC ]
 )
 
 # m = ModbusReadCoils(1, 10, 20)
@@ -45,3 +44,9 @@ dummy_data_3 = bytes(
 
 res = ModbusReadCoilsResponse(dummy_data_3)
 print(res)
+print("has errors?: ", res.hasErrors)
+print(res.rawData.hex(' '))
+
+
+for x in range(0, (len(res.payload) * 8)):
+    print(res.getCoil(x))

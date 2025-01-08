@@ -3,6 +3,8 @@ from modules.base.inner_fields_response import ModbusResponseFields
 from modules.base.crc import ModbusFrameCRC
 from modules.defines import ModbusExceptionCodes, ModbusFunctionCode
 
+import math
+
 class BaseModbusResponse:
     
     def __init__(self, buffer : bytes):
@@ -45,30 +47,70 @@ class BaseModbusResponse:
 
 
     @property
-    def values(self) -> bytes:
+    def payload(self) -> bytes:
         return self._values
         
         
     @property
-    def payload(self) -> bytes:
+    def dataHeaderPayload(self) -> bytes:
         buff : bytearray = bytearray()
         buff.extend(self.header.rawData)
-        buff.extend(self.values)
+        buff.extend(self.payload)
         return buff
     
     
     @property
     def data(self) -> bytes:
         buff : bytearray = bytearray()
-        buff.extend(self.payload)
+        buff.extend(self.dataHeaderPayload)
         buff.extend(self.crc.data)
         return buff
     
     def __str__(self):
-        return "Header: {}, Payload: {}, CRC: {}".format(self.header, self.values.hex(), self.crc)
+        return "Header: {}, Payload: {}, CRC: {}".format(self.header, self.payload.hex(), self.crc)
 
 
-class ModbusReadCoilsResponse(BaseModbusResponse):
+class BaseModbusReadBitsResponse:
 
-    def __init__(self, buffer):
+    def __init__(self, buffer : bytes):
+        self._baseResponse : BaseModbusResponse = BaseModbusResponse(buffer)
+        
+        
+    def _getBit(self, coil_position : int = 0):
+        
+        byte_pos_idx : int = (math.floor(coil_position / 8))
+        shift_right_amount = (coil_position % 8)
+    
+        if len(self.payload) > byte_pos_idx:
+            return ( self.payload[byte_pos_idx] >> shift_right_amount ) & 0x01
+        
+        else:
+            return None
+        
+    @property
+    def payload(self) -> bytes:
+        return self._baseResponse.payload
+        
+    @property
+    def rawData(self) -> bytes:
+        return self._baseResponse.data
+    
+    @property
+    def hasErrors(self) -> bool:
+        return self._baseResponse.header.hasErrors
+    
+    def __str__(self):
+        return self._baseResponse.__str__()    
+    
+    
+    
+    
+    
+    
+class ModbusReadCoilsResponse(BaseModbusReadBitsResponse):
+    def __init__(self, buffer : bytes):
         super().__init__(buffer)
+        
+        
+    def getCoil(self, coil_pos : int = 0):
+        return self._getBit(coil_pos)
