@@ -33,6 +33,7 @@ class ModbusFunctionCode(BaseLabelEnum):
     WRITE_MULTIPLE_HOLDING_REG = 0x10, "Write Multiple Holding Registers"
     
     
+    ERROR_NO_FC = 128, "Error No Function Code"
     ERROR_READ_COILS = 1 + 128, "Error Read Coils"
     ERROR_READ_DISCRETE_INPUTS = 2 + 128, "Error Read Discrete Inputs"
     ERROR_READ_HOLDING_REGISTERS = 3 + 128, "Error Read Holding Registers"

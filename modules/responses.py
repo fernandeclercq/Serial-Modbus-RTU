@@ -17,6 +17,11 @@ class BaseModbusResponse:
             self.header = ModbusResponseHeader(buffer[0], ModbusFunctionCode(buffer[1]), buffer[2])
             self._values = buffer[self.__headerSize : (len(buffer) - self.__crcFieldSize)]
             self.crc = ModbusFrameCRC(self.__parseBuff2Int(buffer[(len(buffer) - self.__crcFieldSize):]))
+            
+        else:
+            self.header = ModbusResponseHeader(0x00, ModbusFunctionCode.ERROR_NO_FC, 0x00)
+            self._values = bytes([0x00])
+            self.crc = ModbusFrameCRC(0x00)
         
         
     
@@ -70,6 +75,9 @@ class BaseModbusResponse:
         return "Header: {}, Payload: {}, CRC: {}".format(self.header, self.payload.hex(), self.crc)
 
 
+
+
+
 class BaseModbusReadBitsResponse:
 
     def __init__(self, buffer : bytes):
@@ -103,8 +111,47 @@ class BaseModbusReadBitsResponse:
         return self._baseResponse.__str__()    
     
     
+class BaseModbusReadRegistersResponse:
+    def __init__(self, buffer : bytes):
+        self._baseResponse : BaseModbusResponse = BaseModbusResponse(buffer)
+        
+    def _getRegister(self, register : int = 0) -> int | None:
+        result : int = None
+        
+        if register <= len(self.payload):
+            
+            LSB_idx = (2 * register)
+            MBS_idx = (2 * register) + 1
+            
+            lsb_byte : bytes = self.payload[MBS_idx]
+            msb_byte : bytes = self.payload[LSB_idx]
+            result = int( (msb_byte << 8) | (lsb_byte) )
+        
+        return result
+        
+
+    @property
+    def payload(self) -> bytes:
+        return self._baseResponse.payload
+        
+    @property
+    def rawData(self) -> bytes:
+        return self._baseResponse.data
+    
+    @property
+    def hasErrors(self) -> bool:
+        return self._baseResponse.header.hasErrors
+    
+    def __str__(self):
+        return self._baseResponse.__str__()
     
     
+class ModbusReadHoldingRegisters(BaseModbusReadRegistersResponse):
+    def __init__(self, buffer : bytes):
+        super().__init__(buffer)
+        
+    def getRegister(self, register : int = 0) -> int | None:
+        return self._getRegister(register)
     
     
 class ModbusReadCoilsResponse(BaseModbusReadBitsResponse):
