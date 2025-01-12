@@ -34,19 +34,19 @@ class BaseModbusReadRequest:
         return "Header: {}, Inner fields: {}, CRC: {}".format(self.header, self.innerFields, self.crc)
 
 
-class ModbusReadCoils(BaseModbusReadRequest):
+class ModbusReadCoilsRequest(BaseModbusReadRequest):
     _MODBUS_FC_ = ModbusFunctionCode.READ_COILS
     
     
-class ModbusReadDiscreteInputs(BaseModbusReadRequest):
+class ModbusReadDiscreteInputsRequest(BaseModbusReadRequest):
     _MODBUS_FC_ = ModbusFunctionCode.READ_DISCRETE_INPUTS
     
     
-class ModbusReadHoldingRegisters(BaseModbusReadRequest):
+class ModbusReadHoldingRegistersRequest(BaseModbusReadRequest):
     _MODBUS_FC_ = ModbusFunctionCode.READ_HOLDING_REGISTERS
     
     
-class ModbusReadInputRegisters(BaseModbusReadRequest):
+class ModbusReadInputRegistersRequest(BaseModbusReadRequest):
     _MODBUS_FC_ = ModbusFunctionCode.READ_INPUT_REGISTERS
     
         
@@ -80,7 +80,7 @@ class BaseModbusSingleWriteRequest:
         return "Header: {}, Inner fields: {}, CRC: {}".format(self.header, self.innerFields, self.crc)
     
 
-class ModbusWriteSingleCoil(BaseModbusSingleWriteRequest):
+class ModbusWriteSingleCoilRequest(BaseModbusSingleWriteRequest):
     _MODBUS_FC_ = ModbusFunctionCode.WRITE_SINGLE_COIL
     
     def __init__(self, slave_id, address, value : bool):
@@ -92,7 +92,7 @@ class ModbusWriteSingleCoil(BaseModbusSingleWriteRequest):
         super().__init__(slave_id, address, _final_val)
         
         
-class ModbusWriteSingleRegister(BaseModbusSingleWriteRequest):
+class ModbusWriteSingleRegisterRequest(BaseModbusSingleWriteRequest):
     _MODBUS_FC_ = ModbusFunctionCode.WRITE_SINGLE_HOLDING_REG
     
     
@@ -130,7 +130,7 @@ class BaseModbusMultipleWriteRequest:
     
     
     
-class ModbusWriteHoldingRegisters(BaseModbusMultipleWriteRequest):
+class ModbusWriteHoldingRegistersRequest(BaseModbusMultipleWriteRequest):
     _MODBUS_FC_ = ModbusFunctionCode.WRITE_MULTIPLE_HOLDING_REG
     
     def __init__(self, slave_id, address, quantity, values):

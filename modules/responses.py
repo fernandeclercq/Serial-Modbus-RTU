@@ -117,12 +117,10 @@ class BaseModbusReadRegistersResponse:
         
     def _getRegister(self, register : int = 0) -> int | None:
         result : int = None
+        LSB_idx = (2 * register)
+        MBS_idx = (2 * register) + 1
         
-        if register <= len(self.payload):
-            
-            LSB_idx = (2 * register)
-            MBS_idx = (2 * register) + 1
-            
+        if MBS_idx <= len(self.payload):
             lsb_byte : bytes = self.payload[MBS_idx]
             msb_byte : bytes = self.payload[LSB_idx]
             result = int( (msb_byte << 8) | (lsb_byte) )
@@ -146,13 +144,12 @@ class BaseModbusReadRegistersResponse:
         return self._baseResponse.__str__()
     
     
-class ModbusReadHoldingRegisters(BaseModbusReadRegistersResponse):
-    def __init__(self, buffer : bytes):
-        super().__init__(buffer)
-        
-    def getRegister(self, register : int = 0) -> int | None:
-        return self._getRegister(register)
     
+    
+    
+    
+    
+
     
 class ModbusReadCoilsResponse(BaseModbusReadBitsResponse):
     def __init__(self, buffer : bytes):
@@ -161,3 +158,21 @@ class ModbusReadCoilsResponse(BaseModbusReadBitsResponse):
         
     def getCoil(self, coil_pos : int = 0):
         return self._getBit(coil_pos)
+    
+    
+    
+class ModbusReadInputRegistersResponse(BaseModbusReadRegistersResponse):
+    def __init__(self, buffer : bytes):
+        super().__init__(buffer)
+        
+    def getRegister(self, register : int = 0) -> int | None:
+        return self._getRegister(register)
+    
+    
+class ModbusReadHoldingRegistersResponse(BaseModbusReadRegistersResponse):
+    def __init__(self, buffer : bytes):
+        super().__init__(buffer)
+        
+    def getRegister(self, register : int = 0) -> int | None:
+        return self._getRegister(register)
+    
