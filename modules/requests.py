@@ -61,6 +61,15 @@ class BaseModbusSingleWriteRequest:
         self.crc : ModbusFrameCRC = ModbusFrameCRC()
 
         self.crc.generateCrc(self.payload)
+        
+        
+    @property
+    def address(self):
+        return self.innerFields.fields._address
+    
+    @property
+    def value(self) -> int:
+        return self.innerFields.fields._value
     
     @property
     def payload(self) -> bytes:
@@ -108,6 +117,24 @@ class BaseModbusMultipleWriteRequest:
         self.crc : ModbusFrameCRC = ModbusFrameCRC()
 
         self.crc.generateCrc(self.payload)
+        
+        
+    
+    @property
+    def slaveId(self) -> int:
+        return self.header.slaveAddress
+    
+    @property
+    def address(self) -> int:
+        return self.innerFields.address
+    
+    @property
+    def quantity(self) -> int:
+        return self.innerFields.quantity
+    
+    @property
+    def values(self) -> bytes:
+        return self._values
         
 
     @property

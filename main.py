@@ -4,6 +4,7 @@ from modules.requests import ModbusReadCoilsRequest, ModbusReadInputRegistersReq
 from modules.requests import ModbusWriteSingleCoilRequest, ModbusWriteSingleRegisterRequest, ModbusWriteHoldingRegistersRequest
 
 from modules.responses import ModbusReadCoilsResponse, ModbusReadHoldingRegistersResponse, ModbusReadInputRegistersResponse
+from modules.responses import ModbusWriteSingleRegisterResponse, ModbusWriteSingleCoilResponse, ModbusWriteHoldingRegistersResponse
         
 
 
@@ -38,3 +39,9 @@ print(res.rawData.hex(' '))
 
 
 print(res.getRegister(0))
+
+request = ModbusWriteSingleRegisterRequest(14, 0, 123)
+response = ModbusWriteSingleRegisterResponse(request)
+
+print(request)
+print(response)

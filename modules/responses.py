@@ -175,4 +175,41 @@ class ModbusReadHoldingRegistersResponse(BaseModbusReadRegistersResponse):
         
     def getRegister(self, register : int = 0) -> int | None:
         return self._getRegister(register)
+
+
+
+##########################################################################################
+##########################################################################################
+
+from modules.requests import ModbusWriteSingleRegisterRequest, ModbusWriteSingleCoilRequest, ModbusWriteHoldingRegistersRequest
+
+
+class ModbusWriteSingleRegisterResponse(ModbusWriteSingleRegisterRequest):
+    """ Single Write Register Response (echo of the Request)"""
+    def __init__(self, request : ModbusWriteSingleRegisterRequest):
+        super().__init__(request.header.slaveAddress, request.address , request.value)
+        
+        
+    def __str__(self):
+        return super().__str__()
     
+    
+class ModbusWriteSingleCoilResponse(ModbusWriteSingleCoilRequest):
+    """ Single Write Coil Response (echo of the Request)"""
+    def __init__(self, request : ModbusWriteSingleCoilRequest):
+        super().__init__(request.header.slaveAddress, request.address , request.value)
+        
+        
+    def __str__(self):
+        return super().__str__()
+    
+    
+class ModbusWriteHoldingRegistersResponse(ModbusWriteHoldingRegistersRequest):
+    """ Multiple Write Holding Registers Response (echo of the Request)"""
+    def __init__(self, request : ModbusWriteHoldingRegistersRequest):
+        super().__init__(request.slaveId, request.address, request.quantity, request.values)
+        
+        
+        
+    def __str__(self):
+        return super().__str__()
