@@ -48,7 +48,7 @@ class BaseModbusResponse:
     
     @property
     def __minimalResponseFrameSize(self) -> int:
-        return (self.__headerSize + self.__crcFieldSize)
+        return (self.__headerSize)
 
 
     @property
@@ -184,6 +184,7 @@ class ModbusReadHoldingRegistersResponse(BaseModbusReadRegistersResponse):
 from modules.requests import ModbusWriteSingleRegisterRequest, ModbusWriteSingleCoilRequest, ModbusWriteHoldingRegistersRequest
 
 
+# TODO: Need to implement proper handling of response from serial(Errors might be reported)
 class ModbusWriteSingleRegisterResponse(ModbusWriteSingleRegisterRequest):
     """ Single Write Register Response (echo of the Request)"""
     def __init__(self, request : ModbusWriteSingleRegisterRequest):
@@ -193,7 +194,7 @@ class ModbusWriteSingleRegisterResponse(ModbusWriteSingleRegisterRequest):
     def __str__(self):
         return super().__str__()
     
-    
+# TODO: Need to implement proper handling of response from serial(Errors might be reported)
 class ModbusWriteSingleCoilResponse(ModbusWriteSingleCoilRequest):
     """ Single Write Coil Response (echo of the Request)"""
     def __init__(self, request : ModbusWriteSingleCoilRequest):
@@ -203,7 +204,7 @@ class ModbusWriteSingleCoilResponse(ModbusWriteSingleCoilRequest):
     def __str__(self):
         return super().__str__()
     
-    
+# TODO: Need to implement proper handling of response from serial(Errors might be reported)
 class ModbusWriteHoldingRegistersResponse(ModbusWriteHoldingRegistersRequest):
     """ Multiple Write Holding Registers Response (echo of the Request)"""
     def __init__(self, request : ModbusWriteHoldingRegistersRequest):
