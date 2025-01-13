@@ -114,6 +114,7 @@ class BaseModbusMultipleWriteRequest:
         self.header : ModbusFrameHeader = ModbusFrameHeader(slave_id, self._MODBUS_FC_)
         self.innerFields : ModbusMultipleWriteRequestFields = ModbusMultipleWriteRequestFields(address, quantity, byte_count)
         self._values : bytes | list[int] = values
+        self._formattedValues : bytes = self.__formatValues()
         self.crc : ModbusFrameCRC = ModbusFrameCRC()
 
         self.crc.generateCrc(self.payload)
@@ -132,9 +133,28 @@ class BaseModbusMultipleWriteRequest:
     def quantity(self) -> int:
         return self.innerFields.quantity
     
+    def __formatValues(self):
+        tmp_array : list[int] = []
+        
+        for b in self._values:
+            # Cap the values to 0xFFFF
+            tmp = b & 0xFFFF
+            # Create LSB Byte
+            lsb = tmp & 0xFF
+            # Create MSB Byte 
+            msb = tmp >> 8 & 0xFF
+            
+            # Append bytes to list
+            tmp_array.append(lsb)
+            tmp_array.append(msb)
+            
+        # Save the int array as bytes
+        return bytes(tmp_array)
+        
+    
     @property
     def values(self) -> bytes:
-        return self._values
+        return self._formattedValues
         
 
     @property
@@ -142,7 +162,7 @@ class BaseModbusMultipleWriteRequest:
         buff : bytearray = bytearray()
         buff.extend(self.header.rawData)
         buff.extend(self.innerFields.rawData)
-        buff.extend(self._values[0:self.innerFields.byteCount])
+        buff.extend(self.values[0:self.innerFields.byteCount])
         return buff
     
     @property
@@ -160,12 +180,14 @@ class BaseModbusMultipleWriteRequest:
 class ModbusWriteHoldingRegistersRequest(BaseModbusMultipleWriteRequest):
     _MODBUS_FC_ = ModbusFunctionCode.WRITE_MULTIPLE_HOLDING_REG
     
-    def __init__(self, slave_id, address, quantity, values):
+    def __init__(self, slave_id : int, address : int, quantity : int, values : bytes):
         
         _final_qty : int = 0
         
         if quantity > 123:
             _final_qty = 123
+        else:
+            _final_qty = quantity
         
         super().__init__(slave_id, address, _final_qty, (_final_qty * 2), values)
     
