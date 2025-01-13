@@ -113,7 +113,7 @@ class BaseModbusMultipleWriteRequestFields(BigEndianStructure):
     _fields_ = [
         ('_address_', c_uint16),
         ('_qty_', c_uint16),
-        ('_byte_count_', c_uint16)
+        ('_byte_count_', c_uint8)
     ]
     
     @property
