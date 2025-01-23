@@ -114,7 +114,7 @@ class BaseModbusMultipleWriteRequest:
         self.header : ModbusFrameHeader = ModbusFrameHeader(slave_id, self._MODBUS_FC_)
         self.innerFields : ModbusMultipleWriteRequestFields = ModbusMultipleWriteRequestFields(address, quantity, byte_count)
         self._values : bytes | list[int] = values
-        self._formattedValues : bytes = self.__formatValues()
+        
         self.crc : ModbusFrameCRC = ModbusFrameCRC()
 
         self.crc.generateCrc(self.payload)
@@ -133,12 +133,14 @@ class BaseModbusMultipleWriteRequest:
     def quantity(self) -> int:
         return self.innerFields.quantity
     
-    def __formatValues(self):
+    
+    @staticmethod
+    def formatValues(values : list[int]):
         tmp_array : list[int] = []
         
-        for b in self._values:
+        for val in values:
             # Cap the values to 0xFFFF
-            tmp = b & 0xFFFF
+            tmp = val & 0xFFFF
             # Create LSB Byte
             lsb = tmp & 0xFF
             # Create MSB Byte 
@@ -150,11 +152,11 @@ class BaseModbusMultipleWriteRequest:
             
         # Save the int array as bytes
         return bytes(tmp_array)
-        
+    
     
     @property
     def values(self) -> bytes:
-        return self._formattedValues
+        return self._values
         
 
     @property
