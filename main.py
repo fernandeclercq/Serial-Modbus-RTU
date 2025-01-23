@@ -1,47 +1,28 @@
-from serial import Serial
+from modules.modbus_rtu import ModbusRTU
+import time
 
-from modules.requests import ModbusReadCoilsRequest, ModbusReadInputRegistersRequest, ModbusReadHoldingRegistersRequest
-from modules.requests import ModbusWriteSingleCoilRequest, ModbusWriteSingleRegisterRequest, ModbusWriteHoldingRegistersRequest
 
-from modules.responses import ModbusReadCoilsResponse, ModbusReadHoldingRegistersResponse, ModbusReadInputRegistersResponse
-from modules.responses import ModbusWriteSingleRegisterResponse, ModbusWriteSingleCoilResponse, ModbusWriteHoldingRegistersResponse
+
+controller_1 = ModbusRTU("/dev/ttyUSB1", 921600, 0.1)
+flip : bool = False
+
+while True:
+    
+    
+    if flip:
+        flip = False
         
+        controller_1.writeSingleHoldingRegister(0, 0, 1)
 
+        controller_1.writeSingleCoil(0, 2, True)
+        
+    else:
+        flip = True
+        controller_1.writeSingleHoldingRegister(0, 0, 2)
 
-dummy_data : bytes = bytes(list(range(0, 256)))
-
-dummy_data_2 : bytes = bytes(
-    [0x0B, 
-     0x01,
-     0x04,
-     0xCD, 0x6B, 
-     0xB2, 0x7F, 
-     
-     0x2B, 0xE1]
-)
-
-dummy_data_3 = bytes(
-    [ 
-     0x0B, 
-     0x01, 
-     0x02, 
-     0xAC, 0xDB, 0xFB, 0x0D, 0xDE, 0xAD,
-     0x37, 0xBC ]
-)
+        controller_1.writeSingleCoil(0, 2, True)
+        
+    time.sleep(2)
 
 
 
-
-res = ModbusReadHoldingRegistersResponse(dummy_data_3)
-print(res)
-print("has errors?: ", res.hasErrors)
-print(res.rawData.hex(' '))
-
-
-print(res.getRegister(0))
-
-request = ModbusWriteSingleRegisterRequest(14, 0, 123)
-response = ModbusWriteSingleRegisterResponse(request)
-
-print(request)
-print(response)
